@@ -22,14 +22,15 @@ const getPentominoColor = (type: PentominoType): string => {
 
 interface GridProps {
   grid: number[][];
+  pieceGrid: (PentominoType | null)[][];
   currentPiece: Piece | null;
   ghostPiece: Piece | null;
 }
 
-export const Grid = memo(({ grid, currentPiece, ghostPiece }: GridProps) => {
+export const Grid = memo(({ grid, pieceGrid, currentPiece, ghostPiece }: GridProps) => {
   // Create a display grid that includes current piece and ghost piece
   const displayGrid = grid.map(row => [...row]);
-  const pieceTypeGrid: (PentominoType | null)[][] = grid.map(row => row.map(() => null));
+  const pieceTypeGrid: (PentominoType | null)[][] = pieceGrid.map(row => [...row]);
   
   // Add ghost piece to display grid
   if (ghostPiece) {
@@ -93,7 +94,7 @@ export const Grid = memo(({ grid, currentPiece, ghostPiece }: GridProps) => {
                 className={`
                   w-6 h-6 border border-game-border/30
                   ${cell === 0 ? 'bg-game-grid' : ''}
-                  ${cell === 1 ? 'bg-foreground border-game-border' : ''}
+                  ${cell === 1 ? `${colorClass} border-game-border shadow-sm` : ''}
                   ${cell === 2 ? 'bg-game-ghost border-game-ghost' : ''}
                   ${cell === 3 ? `${colorClass} border-game-border shadow-sm` : ''}
                 `}

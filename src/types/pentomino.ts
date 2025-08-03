@@ -14,6 +14,7 @@ export interface Piece {
 
 export interface GameState {
   grid: number[][];
+  pieceGrid: (PentominoType | null)[][];
   currentPiece: Piece | null;
   nextPieces: PentominoType[];
   holdPiece: PentominoType | null;

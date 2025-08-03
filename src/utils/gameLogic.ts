@@ -7,10 +7,15 @@ export const createEmptyGrid = (): number[][] => {
   return Array(GRID_HEIGHT).fill(null).map(() => Array(GRID_WIDTH).fill(0));
 };
 
+export const createEmptyPieceGrid = (): (PentominoType | null)[][] => {
+  return Array(GRID_HEIGHT).fill(null).map(() => Array(GRID_WIDTH).fill(null));
+};
+
 export const createInitialGameState = (): GameState => {
   const bag = generateBag();
   return {
     grid: createEmptyGrid(),
+    pieceGrid: createEmptyPieceGrid(),
     currentPiece: null,
     nextPieces: bag.slice(1, 6),
     holdPiece: null,
@@ -172,8 +177,9 @@ export const movePiece = (piece: Piece, dx: number, dy: number): Piece => {
   };
 };
 
-export const placePiece = (piece: Piece, grid: number[][]): number[][] => {
+export const placePiece = (piece: Piece, grid: number[][], pieceGrid: (PentominoType | null)[][]): { newGrid: number[][]; newPieceGrid: (PentominoType | null)[][] } => {
   const newGrid = grid.map(row => [...row]);
+  const newPieceGrid = pieceGrid.map(row => [...row]);
   
   for (let y = 0; y < piece.shape.length; y++) {
     for (let x = 0; x < piece.shape[y].length; x++) {
@@ -182,15 +188,16 @@ export const placePiece = (piece: Piece, grid: number[][]): number[][] => {
         const newY = piece.position.y + y;
         if (newY >= 0 && newY < GRID_HEIGHT && newX >= 0 && newX < GRID_WIDTH) {
           newGrid[newY][newX] = 1;
+          newPieceGrid[newY][newX] = piece.type;
         }
       }
     }
   }
   
-  return newGrid;
+  return { newGrid, newPieceGrid };
 };
 
-export const clearLines = (grid: number[][]): { newGrid: number[][]; linesCleared: number } => {
+export const clearLines = (grid: number[][], pieceGrid: (PentominoType | null)[][]): { newGrid: number[][]; newPieceGrid: (PentominoType | null)[][]; linesCleared: number } => {
   const fullLines: number[] = [];
   
   // Find full lines
@@ -201,15 +208,18 @@ export const clearLines = (grid: number[][]): { newGrid: number[][]; linesCleare
   }
   
   if (fullLines.length === 0) {
-    return { newGrid: grid, linesCleared: 0 };
+    return { newGrid: grid, newPieceGrid: pieceGrid, linesCleared: 0 };
   }
   
   // Remove full lines and add empty lines at top
   const newGrid = grid.filter((_, index) => !fullLines.includes(index));
+  const newPieceGrid = pieceGrid.filter((_, index) => !fullLines.includes(index));
   const emptyLines = Array(fullLines.length).fill(null).map(() => Array(GRID_WIDTH).fill(0));
+  const emptyPieceLines = Array(fullLines.length).fill(null).map(() => Array(GRID_WIDTH).fill(null));
   
   return {
     newGrid: [...emptyLines, ...newGrid],
+    newPieceGrid: [...emptyPieceLines, ...newPieceGrid],
     linesCleared: fullLines.length,
   };
 };

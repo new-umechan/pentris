@@ -72,7 +72,7 @@ export const useGameLogic = () => {
     return piece;
   }, [bag, bagIndex]);
 
-  const updateNextQueue = useCallback(() => {
+  const updateNextQueue = useCallback((currentPieceType?: PentominoType) => {
     const nextPieces: PentominoType[] = [];
     let tempBag = [...bag];
     let tempIndex = bagIndex;
@@ -82,8 +82,13 @@ export const useGameLogic = () => {
         tempBag = generateBag();
         tempIndex = 0;
       }
-      nextPieces.push(tempBag[tempIndex]);
+      const piece = tempBag[tempIndex];
+      // Skip current piece if it would be in the next queue
+      if (piece !== currentPieceType || nextPieces.length > 0) {
+        nextPieces.push(piece);
+      }
       tempIndex++;
+      if (nextPieces.length >= 5) break;
     }
 
     setGameState(prev => ({ ...prev, nextPieces }));
@@ -105,7 +110,7 @@ export const useGameLogic = () => {
       currentPiece: newPiece,
       canHold: true
     }));
-    updateNextQueue();
+    updateNextQueue(newPiece.type);
   }, [gameState.grid, getNextPiece, updateNextQueue]);
 
   const moveLeft = useCallback(() => {
@@ -134,8 +139,8 @@ export const useGameLogic = () => {
       setGameState(prev => ({ ...prev, currentPiece: movedPiece }));
     } else {
       // Lock piece
-      const newGrid = placePiece(gameState.currentPiece, gameState.grid);
-      const { newGrid: clearedGrid, linesCleared } = clearLines(newGrid);
+      const { newGrid, newPieceGrid } = placePiece(gameState.currentPiece, gameState.grid, gameState.pieceGrid);
+      const { newGrid: clearedGrid, newPieceGrid: clearedPieceGrid, linesCleared } = clearLines(newGrid, newPieceGrid);
       
       const points = calculateScore(linesCleared, gameState.level);
       const newLines = gameState.lines + linesCleared;
@@ -148,6 +153,7 @@ export const useGameLogic = () => {
       setGameState(prev => ({
         ...prev,
         grid: clearedGrid,
+        pieceGrid: clearedPieceGrid,
         currentPiece: null,
         score: prev.score + points,
         lines: newLines,
@@ -165,8 +171,8 @@ export const useGameLogic = () => {
     const ghost = getGhostPiece(gameState.currentPiece, gameState.grid);
     const droppedPiece = { ...gameState.currentPiece, position: ghost.position };
     
-    const newGrid = placePiece(droppedPiece, gameState.grid);
-    const { newGrid: clearedGrid, linesCleared } = clearLines(newGrid);
+    const { newGrid, newPieceGrid } = placePiece(droppedPiece, gameState.grid, gameState.pieceGrid);
+    const { newGrid: clearedGrid, newPieceGrid: clearedPieceGrid, linesCleared } = clearLines(newGrid, newPieceGrid);
     
     const dropBonus = Math.abs(ghost.position.y - gameState.currentPiece.position.y) * 2;
     const points = calculateScore(linesCleared, gameState.level) + dropBonus;
@@ -180,6 +186,7 @@ export const useGameLogic = () => {
     setGameState(prev => ({
       ...prev,
       grid: clearedGrid,
+      pieceGrid: clearedPieceGrid,
       currentPiece: null,
       score: prev.score + points,
       lines: newLines,
@@ -252,7 +259,6 @@ export const useGameLogic = () => {
     setGhostPiece(null);
     setBag(generateBag());
     setBagIndex(0);
-    setTimeout(() => spawnNewPiece(), 100);
   }, []);
 
   return {

@@ -55,6 +55,7 @@ export const PentominoGame = () => {
           <div className="flex flex-col items-center">
             <Grid 
               grid={gameState.grid}
+              pieceGrid={gameState.pieceGrid}
               currentPiece={gameState.currentPiece}
               ghostPiece={ghostPiece}
             />
