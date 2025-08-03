@@ -1,6 +1,24 @@
 import { memo } from 'react';
 import { PentominoType, PENTOMINO_SHAPES } from '@/types/pentomino';
 
+const getPentominoColor = (type: PentominoType): string => {
+  const colorMap = {
+    I: 'bg-[hsl(var(--pentomino-i))]',
+    P: 'bg-[hsl(var(--pentomino-p))]',
+    U: 'bg-[hsl(var(--pentomino-u))]',
+    V: 'bg-[hsl(var(--pentomino-v))]',
+    W: 'bg-[hsl(var(--pentomino-w))]',
+    X: 'bg-[hsl(var(--pentomino-x))]',
+    Y: 'bg-[hsl(var(--pentomino-y))]',
+    Z: 'bg-[hsl(var(--pentomino-z))]',
+    F: 'bg-[hsl(var(--pentomino-f))]',
+    T: 'bg-[hsl(var(--pentomino-t))]',
+    L: 'bg-[hsl(var(--pentomino-l))]',
+    N: 'bg-[hsl(var(--pentomino-n))]',
+  };
+  return colorMap[type];
+};
+
 interface HoldQueueProps {
   holdPiece: PentominoType | null;
   canHold: boolean;
@@ -11,6 +29,7 @@ export const HoldQueue = memo(({ holdPiece, canHold }: HoldQueueProps) => {
     const shape = PENTOMINO_SHAPES[type][0];
     const maxWidth = Math.max(...shape.map(row => row.length));
     const maxHeight = shape.length;
+    const colorClass = getPentominoColor(type);
     
     return (
       <div 
@@ -27,7 +46,7 @@ export const HoldQueue = memo(({ holdPiece, canHold }: HoldQueueProps) => {
               className={`
                 w-3 h-3
                 ${cell === 1 
-                  ? `bg-game-block border border-game-active ${!canHold ? 'opacity-50' : ''}` 
+                  ? `${colorClass} border border-game-border ${!canHold ? 'opacity-50' : ''}` 
                   : 'bg-transparent'
                 }
               `}

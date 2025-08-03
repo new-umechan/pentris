@@ -40,12 +40,24 @@ All colors MUST be HSL for proper theme consistency.
 
     /* Game Specific Colors */
     --game-grid: 0 0% 96%;
-    --game-block: 0 0% 20%;
     --game-ghost: 0 0% 70%;
     --game-border: 0 0% 85%;
-    --game-active: 0 0% 0%;
     --game-background: 0 0% 98%;
     --game-shadow: 0 0% 0% / 0.1;
+    
+    /* Pentomino piece colors */
+    --pentomino-i: 0 100% 50%;      /* Red */
+    --pentomino-p: 240 100% 50%;    /* Blue */
+    --pentomino-u: 60 100% 50%;     /* Yellow */
+    --pentomino-v: 120 100% 40%;    /* Green */
+    --pentomino-w: 300 100% 50%;    /* Magenta */
+    --pentomino-x: 30 100% 50%;     /* Orange */
+    --pentomino-y: 180 100% 40%;    /* Cyan */
+    --pentomino-z: 270 100% 50%;    /* Purple */
+    --pentomino-f: 15 100% 50%;     /* Orange-Red */
+    --pentomino-t: 195 100% 50%;    /* Light Blue */
+    --pentomino-l: 90 100% 40%;     /* Lime */
+    --pentomino-n: 330 100% 50%;    /* Pink */
 
     --radius: 0.5rem;
 
